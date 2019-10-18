@@ -5,9 +5,8 @@ class ShoppingCartServiceWithKotlin {
 
     data class Book(val id: Int, val name: String, val price: Double)
 
-    private fun organizeBooksIntoBundles(books: List<Book>): List<List<Book>> {
-        return adjustBundles(books.fold(emptyList(), this::putBookIntoBundle))
-    }
+    private fun organizeBooksIntoBundles(books: List<Book>): List<List<Book>> =
+            adjustBundles(books.fold(emptyList(), this::putBookIntoBundle))
 
     private fun adjustBundles(bundles: List<List<Book>>): List<List<Book>> {
         val bundleWithThreeBooks = bundles.filter { it.size == 3 }.flatten()
@@ -20,8 +19,7 @@ class ShoppingCartServiceWithKotlin {
     }
 
     private fun reorderBundlesForBetterDiscount(bundleWithThreeBooks: List<Book>, bundleWithFiveBooks: List<Book>): List<List<Book>> {
-        val sameBooks = bundleWithThreeBooks
-        val differentBooks = bundleWithFiveBooks - sameBooks
+        val differentBooks = bundleWithFiveBooks - bundleWithThreeBooks
         val bundleOneWithFourBooks = bundleWithThreeBooks + differentBooks.last()
         val bundleTwoWithFourBooks = bundleWithFiveBooks - differentBooks.last()
         return listOf(bundleOneWithFourBooks, bundleTwoWithFourBooks)
@@ -35,7 +33,6 @@ class ShoppingCartServiceWithKotlin {
         }
         return newAcc.sortedByDescending { it.size }
     }
-
 
     fun getDiscountedPrice(books: List<Book>): Double =
             this.organizeBooksIntoBundles(books).map { discountedPriceForSet(it) }.sum()
@@ -63,5 +60,4 @@ class ShoppingCartServiceWithKotlin {
 
     private fun booksAreDifferent(books: List<Book>) =
             books.distinct().size == books.size
-
 }

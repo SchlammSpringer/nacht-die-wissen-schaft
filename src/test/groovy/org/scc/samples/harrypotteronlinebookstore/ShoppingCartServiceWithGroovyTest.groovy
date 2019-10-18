@@ -5,7 +5,7 @@ import spock.lang.Unroll
 
 import static org.scc.samples.harrypotteronlinebookstore.ShoppingCartServiceWithKotlin.Book
 
-class ShoppingCartServiceWithKotlinTest extends Specification {
+class ShoppingCartServiceWithGroovyTest extends Specification {
 
     @Unroll
     def "a specific cart of books costs #price after discount"() {
@@ -19,7 +19,7 @@ class ShoppingCartServiceWithKotlinTest extends Specification {
                 .flatten() as List<Book>
 
         and: "the shopping cart service"
-        def shoppingCartService = new ShoppingCartServiceWithKotlin()
+        def shoppingCartService = new ShoppingCartServiceWithGroovy()
         when: "the price for the cartWithNumberOfBooks is calculated"
         def discountedPrice = shoppingCartService.getDiscountedPrice cartOfBooks
 
