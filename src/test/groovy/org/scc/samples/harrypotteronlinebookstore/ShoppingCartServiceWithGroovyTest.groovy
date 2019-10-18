@@ -3,8 +3,6 @@ package org.scc.samples.harrypotteronlinebookstore
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.scc.samples.harrypotteronlinebookstore.ShoppingCartServiceWithKotlin.Book
-
 class ShoppingCartServiceWithGroovyTest extends Specification {
 
     @Unroll
@@ -61,9 +59,9 @@ class ShoppingCartServiceWithGroovyTest extends Specification {
     }
 
     def copiesOfBook = { int copies, int bookId, String bookName ->
-        copies > 0 ? (1..copies).collect {
-            new Book(bookId, bookName, 8)
-        } : []
+        (copies > 0 ? (1..copies).collect {
+            new Book(id: bookId, name: bookName, price: 8)
+        } : [])
     }
 }
 

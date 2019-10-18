@@ -4,26 +4,26 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.Immutable
 import groovy.transform.ToString
 
+@Immutable
+@EqualsAndHashCode
+@ToString
+class Book {
+  int id
+  String name
+  double price
+}
+
 class ShoppingCartServiceWithGroovy {
 
-  @Immutable
-  @EqualsAndHashCode
-  @ToString
-  class Book {
-    int id
-    String name
-    double price
-  }
+  def getDiscountedPrice = { List<Book> books ->
 
-  double getDiscountedPrice(List<Book> books) {
-
-    def firstBundle = books.unique(false)
-    def secondBundle = books
+    List<Book> firstBundle = books.unique(false)
+    List<Book> secondBundle = books
     firstBundle.forEach { secondBundle.remove(books.indexOf(it)) }
 
     if (secondBundle.isEmpty()) {
-      def fullPriceUniqueCart = firstBundle.collect { it.price }.flatten().sum() as double
-      calculateDiscount(firstBundle, fullPriceUniqueCart)
+      double fullPriceUniqueCart = calculateFullPrice firstBundle
+      calculateDiscount firstBundle, fullPriceUniqueCart
 
     } else {
       if (firstBundle.size() == 5 && secondBundle.size() == 3) {
@@ -31,23 +31,27 @@ class ShoppingCartServiceWithGroovy {
         firstBundle = bigBundle.get(0)
         secondBundle = bigBundle.get(1)
       }
-      def fullPriceUniqueCart = firstBundle.collect { it.price }.flatten().sum() as double
+      def fullPriceUniqueCart = calculateFullPrice(firstBundle)
       def discountUniqueCart = calculateDiscount(firstBundle, fullPriceUniqueCart)
 
-      def fullPriceSecondCart = secondBundle.collect { it.price }.flatten().sum() as double
+      def fullPriceSecondCart = calculateFullPrice(secondBundle)
       def discountSecondCart = calculateDiscount(secondBundle, fullPriceSecondCart)
       discountUniqueCart + discountSecondCart
     }
   }
 
-  def reorderBundlesForBetterDiscount(List<Book> bundleWithFiveBooks, List<Book> bundleWithThreeBooks) {
+  private calculateFullPrice = { List<Book> bundle ->
+    bundle.collect { it.price }.flatten().sum() as double
+  }
+
+  def reorderBundlesForBetterDiscount = { List<Book> bundleWithFiveBooks, List<Book> bundleWithThreeBooks ->
     def differentBooks = bundleWithFiveBooks - bundleWithThreeBooks
     def bundleOneWithFourBooks = bundleWithThreeBooks + differentBooks.last()
     def bundleTwoWithFourBooks = bundleWithFiveBooks - differentBooks.last()
     [bundleOneWithFourBooks, bundleTwoWithFourBooks]
   }
 
-  double calculateDiscount(List<Book> books, double fullPrice) {
+  def calculateDiscount = { List<Book> books, double fullPrice ->
     switch (books.size()) {
       case 1:
         return fullPrice
