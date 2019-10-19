@@ -60,7 +60,7 @@ class ShoppingCartServiceWithGroovyTest extends Specification {
 
     def copiesOfBook = { int copies, int bookId, String bookName ->
         (copies > 0 ? (1..copies).collect {
-            new Book(id: bookId, name: bookName, price: 8)
+            new Book(id: bookId, name: bookName)
         } : [])
     }
 }
