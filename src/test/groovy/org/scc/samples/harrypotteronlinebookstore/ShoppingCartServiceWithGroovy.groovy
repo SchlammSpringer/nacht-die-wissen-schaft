@@ -1,12 +1,11 @@
 package org.scc.samples.harrypotteronlinebookstore
 
-import groovy.transform.EqualsAndHashCode
+
 import groovy.transform.Immutable
-import groovy.transform.ToString
+import groovy.transform.Sortable
 
 @Immutable
-@EqualsAndHashCode
-@ToString
+@Sortable
 class Book {
   int id
   String name
@@ -17,30 +16,30 @@ class ShoppingCartServiceWithGroovy {
 
   def getDiscountedPrice = { List<Book> books ->
 
-    List<Book> firstBundle = books.unique(false)
-    List<Book> secondBundle = books
-    firstBundle.forEach { secondBundle.remove(books.indexOf(it)) }
+    List<Book> firstBundle = books.toUnique()
+    List<Book> secondBundle = books.countBy { it }.findAll { it.value > 1 }.collect { it.key }
 
-    if (secondBundle.isEmpty()) {
-      double fullPriceUniqueCart = calculateFullPrice firstBundle
-      calculateDiscount firstBundle, fullPriceUniqueCart
-
-    } else {
-      if (firstBundle.size() == 5 && secondBundle.size() == 3) {
-        def bigBundle = reorderBundlesForBetterDiscount(firstBundle, secondBundle)
-        firstBundle = bigBundle.get(0)
-        secondBundle = bigBundle.get(1)
-      }
-      def fullPriceUniqueCart = calculateFullPrice(firstBundle)
-      def discountUniqueCart = calculateDiscount(firstBundle, fullPriceUniqueCart)
-
-      def fullPriceSecondCart = calculateFullPrice(secondBundle)
-      def discountSecondCart = calculateDiscount(secondBundle, fullPriceSecondCart)
-      discountUniqueCart + discountSecondCart
+//  reoder bundles for better discount
+    if (firstBundle.size() == 5 && secondBundle.size() == 3) {
+      def bigBundle = reorderBundlesForBetterDiscount(firstBundle, secondBundle)
+      firstBundle = bigBundle.get(0)
+      secondBundle = bigBundle.get(1)
     }
+//  calculate price
+    def fullPriceFirstBundle = calculateFullPrice(firstBundle)
+    def discountPriceFirstBundle = calculateDiscount(firstBundle, fullPriceFirstBundle)
+    def fullPriceSecondBundle = 0
+    def discountPriceSecondBundle = 0
+
+//  calculate price for second bundle
+    if (!secondBundle.isEmpty()) {
+      fullPriceSecondBundle = calculateFullPrice(secondBundle)
+      discountPriceSecondBundle = calculateDiscount(secondBundle, fullPriceSecondBundle)
+    }
+    discountPriceFirstBundle + discountPriceSecondBundle
   }
 
-  private calculateFullPrice = { List<Book> bundle ->
+  def calculateFullPrice = { List<Book> bundle ->
     bundle.collect { it.price }.flatten().sum() as double
   }
 
