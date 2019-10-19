@@ -27,17 +27,13 @@ class ShoppingCartServiceWithGroovy {
 //  calculate price
     def fullPriceFirstBundle = firstBundle.size() * 8.0
     def discountPriceFirstBundle = calculateDiscount(firstBundle, fullPriceFirstBundle)
-    def fullPriceSecondBundle = 0
-    def discountPriceSecondBundle = 0
 
 //  calculate price for second bundle
-    if (!secondBundle.isEmpty()) {
-      fullPriceSecondBundle = secondBundle.size() * 8.0
-      discountPriceSecondBundle = calculateDiscount(secondBundle, fullPriceSecondBundle)
-    }
+    def fullPriceSecondBundle = secondBundle.size() * 8.0
+    def discountPriceSecondBundle = calculateDiscount(secondBundle, fullPriceSecondBundle)
+
     discountPriceFirstBundle + discountPriceSecondBundle
   }
-
 
   def reorderBundlesForBetterDiscount = { List<Book> bundleWithFiveBooks, List<Book> bundleWithThreeBooks ->
     def differentBooks = bundleWithFiveBooks - bundleWithThreeBooks
