@@ -15,16 +15,19 @@ class ShoppingCartServiceWithGroovy {
 
   def getDiscountedPrice = { List<Book> books ->
 
+//  first bundle without double books
     List<Book> firstBundle = books.toUnique()
+
+//  second bundle with double books
     List<Book> secondBundle = books.countBy { it }.findAll { it.value > 1 }.collect { it.key }
 
-//  reoder bundles for better discount
+//  reorder bundles for better discount
     if (firstBundle.size() == 5 && secondBundle.size() == 3) {
       def bigBundle = reorderBundlesForBetterDiscount(firstBundle, secondBundle)
       firstBundle = bigBundle.get(0)
       secondBundle = bigBundle.get(1)
     }
-//  calculate price
+//  calculate price for first bundle
     def fullPriceFirstBundle = firstBundle.size() * 8.0
     def discountPriceFirstBundle = calculateDiscount(firstBundle, fullPriceFirstBundle)
 
@@ -32,6 +35,7 @@ class ShoppingCartServiceWithGroovy {
     def fullPriceSecondBundle = secondBundle.size() * 8.0
     def discountPriceSecondBundle = calculateDiscount(secondBundle, fullPriceSecondBundle)
 
+//  calculate full price
     discountPriceFirstBundle + discountPriceSecondBundle
   }
 
